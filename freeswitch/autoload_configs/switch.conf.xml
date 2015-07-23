@@ -37,7 +37,7 @@
         <!--<param name="enable-clock-nanosleep" value="true"/>-->
         <!--<param name="enable-cond-yield" value="true"/>-->
         <!--<param name="enable-timer-matrix" value="true"/>-->
-        <!--<param name="verbose-channel-events" value="true"/>-->
+        <param name="verbose-channel-events" value="true"/>
         <!--<param name="min-idle-cpu" value="15"/>-->
         <!--<param name="tipping-point" value="15"/>-->
         <!--<param name="timer-affinity" value="disabled"/>-->
