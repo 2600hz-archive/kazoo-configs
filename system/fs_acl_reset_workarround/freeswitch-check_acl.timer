@@ -1,0 +1,15 @@
+# Workarround to restore acl when it randomly reseted
+[Unit]
+Description=Script to check and restore FreeSwitch ACL
+
+[Unit]
+Description=Every minute checking freeswitch ACL
+
+[Timer]
+OnBootSec=25min
+OnUnitActiveSec=1m
+Unit=freeswitch-check_acl.service
+
+[Install]
+WantedBy=multi-user.target
+
