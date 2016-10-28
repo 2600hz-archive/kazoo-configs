@@ -10,7 +10,7 @@ fi
 
 RETVAL=1
 USER=${HAPROXY_USER:-root}
-BIN_FILE=${HAPROXY_BIN:-/usr/sbin/haproxy-systemd-wrapper}
+BIN_FILE=${HAPROXY_BIN:-/usr/sbin/haproxy}
 PID_FILE=${HAPROXY_PID:-/var/run/haproxy/kazoo-haproxy.pid}
 CFG_FILE=${HAPROXY_CONFIG:-/etc/kazoo/haproxy/haproxy.cfg}
 export HOME=${HAPROXY_HOME:-/var/lib/haproxy}
