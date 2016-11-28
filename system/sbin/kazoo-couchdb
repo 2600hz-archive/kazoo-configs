@@ -1,0 +1,120 @@
+#!/bin/bash
+
+if [ -f /etc/default/couchdb ]; then
+	. /etc/default/couchdb
+fi
+
+if [ -f /etc/sysconfig/couchdb ]; then
+	. /etc/sysconfig/couchdb
+fi
+
+RETVAL=1
+USER=${COUCHDB_USER:-couchdb}
+BIN_FILE=${COUCHDB_BIN:-/opt/couchdb/bin/couchdb}
+PID_FILE=${COUCHDB_PID:-/var/run/couchdb/kazoo-couchdb.pid}
+export HOME=${COUCHDB_HOME:-/srv}
+
+# Detect core count
+CORES=`grep -E "^processor" /proc/cpuinfo |wc -l`
+if [ "${CORES}" = "1" ]; then
+	BEAM=beam
+else
+	BEAM=beam.smp
+fi
+
+prepare() {
+	mkdir -p ${HOME}
+	chown -R ${USER} ${HOME}
+	mkdir -p /var/log/couchdb
+	chown -R ${USER} /var/log/couchdb
+	mkdir -p /var/run/couchdb
+	chown -R ${USER} /var/run/couchdb
+	if [ -e ${PID_FILE} ]; then
+		rm -rf ${PID_FILE}
+	fi 
+	RETVAL=$?
+}
+
+start() {
+	cd ${HOME}
+
+	set -- ${BIN_FILE} "$@"
+	if [ "$(whoami)" == "${USER}" ]; then
+		exec "$@"
+	else
+		runuser -s /bin/bash ${USER} -c "$*"
+	fi
+	RETVAL=$?
+	
+	if [ ${RETVAL} -ne 0 ]; then
+		echo "Failed to start CouchDB!"
+		RETVAL=1
+	fi
+}
+
+stop() {
+	for i in `pidof ${BEAM}`; do
+		if cat /proc/$i/cmdline | grep -Eq "name[^\-]+couchdb"; then
+			kill $i
+			RETVAL=$?
+		fi
+	done
+}
+
+restart() {
+	stop
+	start
+}
+
+status() {
+	for i in `pidof ${BEAM}`; do
+		if cat /proc/$i/cmdline | grep -Eq "name[^\-]+couchdb"; then
+			echo "CouchDB (pid $i) is running..."
+			if which curl &>/dev/null; then
+				curl localhost:5984/_membership
+			fi
+			RETVAL=0
+		fi
+	done
+	if [ ${RETVAL} -eq 1 ]; then
+		echo "CouchDB is not running!"
+	fi
+}
+
+pid() {
+        for i in `pidof ${BEAM}`; do
+                if cat /proc/$i/cmdline | grep -Eq "name[^\-]+couchdb"; then
+			echo $i
+                        RETVAL=0
+                fi
+        done
+	if [ ${RETVAL} -eq 1 ]; then
+		echo "CouchDB is not running!"
+	fi
+}
+
+case "$1" in
+	prepare)
+		prepare
+		;;
+	background)
+		start
+		;;
+	stop)
+		stop
+		;;
+	restart)
+		restart
+		;;
+	status)
+		status
+		;;
+	pid)
+		pid
+		;;
+	*)
+		echo $"Usage: $0 (prepare|background|stop|restart|status|pid)"
+esac
+
+exit ${RETVAL}
+
