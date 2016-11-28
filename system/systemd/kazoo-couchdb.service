@@ -4,7 +4,7 @@ After=syslog.target network.target
 
 [Service]
 Type=forking
-User=bigcouch
+User=couchdb
 Group=daemon
 PermissionsStartOnly=true
 LimitNOFILE=65536
