@@ -1,0 +1,18 @@
+[Unit]
+Description=CouchDB Configured for Kazoo
+After=syslog.target network.target
+
+[Service]
+Type=forking
+User=couchdb
+Group=daemon
+PermissionsStartOnly=true
+LimitNOFILE=65536
+LimitCORE=infinity
+ExecStartPre=/usr/sbin/kazoo-couchdb prepare
+ExecStart=/usr/sbin/kazoo-couchdb background
+ExecStop=/usr/sbin/kazoo-couchdb stop
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target
