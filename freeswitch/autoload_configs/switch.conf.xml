@@ -46,5 +46,6 @@
         <param name="rtp-enable-zrtp" value="true"/>
         <!--<param name="core-db-dsn" value="fs_core"/>-->
         <!--<param name="core-dbtype" value="MSSQL"/>-->
+        <param name="verbose-channel-events" value ="true"/>
     </settings>
 </configuration>
