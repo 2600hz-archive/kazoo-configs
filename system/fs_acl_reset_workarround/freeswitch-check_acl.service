@@ -1,0 +1,13 @@
+# Workarround to restore acl when it randomly reseted
+[Unit]
+Description=Script to check and restore FreeSwitch ACL
+DefaultDependencies=no
+Wants=local-fs.target
+After=local-fs.target
+Before=sysinit.target shutdown.target
+
+[Service]
+Type=oneshot
+EnvironmentFile=-/etc/sysconfig/freeswitch-check_acl
+ExecStart=-/usr/sbin/check_fs_acl.sh
+IOSchedulingClass=idle
